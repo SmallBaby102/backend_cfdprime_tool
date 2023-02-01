@@ -49,169 +49,145 @@ app.use("/api/auth", auth);
 
 async function getBUsdtTransfer(email, wallet_address){
     try {
-        // const web3 = (new Web3(new Web3.providers.HttpProvider("https://bsc-dataseed.binance.org/")))
-    const web3 = new Web3(new Web3.providers.HttpProvider("https://necessary-snowy-road.bsc.discover.quiknode.pro/917afe17cb7449f1b033b31c03417aad8df285c4/"))
-    // let wallet_addresses = ["0x5fF3A508d28A3c237656Ba23A042863aa47FC098"];
-    const busdt = "0x55d398326f99059fF775485246999027B3197955"; ///BUSDT Contract
-    const provider = new ethers.providers.WebSocketProvider(
-        `wss://necessary-snowy-road.bsc.discover.quiknode.pro/917afe17cb7449f1b033b31c03417aad8df285c4/`
-    ); 
-    // List all token transfers  *to*  myAddress:
-    // const filter = {
-    //     address: busdt,
-    //     topics: [
-    //         ethers.utils.id("Transfer(address,address,uint256)"),
-    //         null,
-    //         [
-    //             ethers.utils.hexZeroPad(wallet_addresses[0], 32),
-    //             // ethers.utils.id(wallet_addresses[0], 32),
-    //         ]
-    //     ]
-    // };
-    // provider.on(filter, async (log) => {
-    //     console.log("TX log:", log);
-    //     web3.eth.getTransaction(log.transactionHash, async function (error, transactionDetail) {
-    //         console.log("trans-detail", transactionDetail);
-    //         // if(parseFloat(transactionDetail.value) < 0.000105 ){
-    //         //     return;
-    //         // }
-           
-    //     });
-    //     // Emitted whenever a DAI token transfer occurs
-    // })
-    const contract = new ethers.Contract(busdt, BUSDT_ABI, provider);
-    const myfilter = contract.filters.Transfer(null, wallet_address)
-    contract.on(myfilter, async (from, to, value, event)=>{
-        let transferEvent ={
-            from: from,
-            to: to,
-            value: value,
-            // eventData: event,
-        }
-        let element = transferEvent;
-        console.log("transferEvent:", element);
-        console.log("toAddress in Index:", wallet_address);
-        let link=`bscscan.com/tx/${event.transactionHash}`;
-        mailOptions={
-            to : email,
-            subject : "Your deposit was succeeded",
-            html : "Hello,<br> You made a new deposit successfully.<br><a href="+link+">Click here to see your transaction</a>" 
-        }
-        smtpTransport.sendMail(mailOptions, function(error, response){
-            if(error){
-                console.log(error);
-            }else{
-                console.log("Message sent: " + response.response);
+        const web3 = new Web3(new Web3.providers.HttpProvider("https://necessary-snowy-road.bsc.discover.quiknode.pro/917afe17cb7449f1b033b31c03417aad8df285c4/"))
+        const busdt = "0x55d398326f99059fF775485246999027B3197955"; ///BUSDT Contract
+        const provider = new ethers.providers.WebSocketProvider(
+            `wss://necessary-snowy-road.bsc.discover.quiknode.pro/917afe17cb7449f1b033b31c03417aad8df285c4/`
+        ); 
+    
+        const contract = new ethers.Contract(busdt, BUSDT_ABI, provider);
+        const myfilter = contract.filters.Transfer(null, wallet_address)
+        contract.on(myfilter, async (from, to, value, event)=>{
+            let transferEvent ={
+                from: from,
+                to: to,
+                value: value,
+                // eventData: event,
             }
-        });
-        Wallet.findOne({ ethAddress : wallet_address })
-        .exec(async (err, wallet) => {
-          if(err || !wallet) {
-            console.log("Cound't find a wallet of this address!");
-            console.log("error:", err, "wallet:", wallet);
-            return;
-          }
-        const amount = web3.utils.fromWei(web3.utils.hexToNumberString(element.value._hex), "ether");
-        const data = {
-        "paymentGatewayUuid": "58d26ead-8ba4-4588-8caa-358937285f88",
-        "tradingAccountUuid": wallet.tradingAccountUuid,
-        "amount": amount,
-        "netAmount": amount,
-        "currency": "USD",
-        "remark": "string"
-        }
-        const headers = { ...global.mySpecialVariable, "Content-Type": "application/json" };
-        const partnerId = global.partnerId;
-        axios.post(`${process.env.API_SERVER}/documentation/payment/api/partner/${partnerId}/deposits/manual`, data, { headers })
-        .then(res => {
-        console.log("deposit success", res.data);
-        })
-        .catch(err => {
-        console.log("deposit manual failed", err);
+            let element = transferEvent;
+            console.log("transferEvent:", element);
+            console.log("toAddress in Index:", wallet_address);
+            let link=`bscscan.com/tx/${event.transactionHash}`;
+            mailOptions={
+                to : email,
+                subject : "Your deposit was succeeded",
+                html : "Hello,<br> You made a new deposit successfully.<br><a href="+link+">Click here to see your transaction</a>" 
+            }
+            smtpTransport.sendMail(mailOptions, function(error, response){
+                if(error){
+                    console.log(error);
+                }else{
+                    console.log("Message sent: " + response.response);
+                }
+            });
+            Wallet.findOne({ ethAddress : wallet_address })
+            .exec(async (err, wallet) => {
+            if(err || !wallet) {
+                console.log("Cound't find a wallet of this address!");
+                console.log("error:", err, "wallet:", wallet);
+                return;
+            }
+            const amount = web3.utils.fromWei(web3.utils.hexToNumberString(element.value._hex), "ether");
+            const data = {
+            "paymentGatewayUuid": "58d26ead-8ba4-4588-8caa-358937285f88",
+            "tradingAccountUuid": wallet.tradingAccountUuid,
+            "amount": amount,
+            "netAmount": amount,
+            "currency": "USD",
+            "remark": "string"
+            }
+            const headers = { ...global.mySpecialVariable, "Content-Type": "application/json" };
+            const partnerId = global.partnerId;
+            axios.post(`${process.env.API_SERVER}/documentation/payment/api/partner/${partnerId}/deposits/manual`, data, { headers })
+            .then(res => {
+            console.log("deposit success", res.data);
+            })
+            .catch(err => {
+            console.log("deposit manual failed", err);
 
-        })
-  
-        const bnb = "0x242a1ff6ee06f2131b7924cacb74c7f9e3a5edc9";
-        const contract = new web3.eth.Contract(BNB_ABI, bnb)
-        const usdtContract = new web3.eth.Contract(BUSDT_ABI, busdt)
-  
-        let sender = global.ADMIN_WALLET_ADDRESS
-        let receiver = wallet_address;
-        let senderkey = global.ADMIN_WALLET_PRIVATE_KEY //admin private key
-        
-        try {
-              //BNB needed for getting USDT
-              let gas = await usdtContract.methods.transfer(sender, element.value._hex).estimateGas({from: receiver});
-  
-              let data = await contract.methods.transfer(receiver, element.value._hex) //change this value to change amount to send according to decimals
-              let nonce = await web3.eth.getTransactionCount(sender) //to get nonce of sender address
-              let chain = {
-                  "name": "bsc",
-                  "networkId": 56,
-                  "chainId": 56
-              } 
-              let rawTransaction = {
-                  "from": sender,
-                  "gasPrice": web3.utils.toHex(parseInt(Math.pow(10,9) * 5)), //5 gwei
-                  "gasLimit": web3.utils.toHex(40000), //40000 gas limit
-                  "gas": web3.utils.toHex(40000), //40000 gas
-                  "to": receiver, //not interacting with bnb contract
-                  "value": web3.utils.toHex(`${gas*parseInt(Math.pow(10,9) * 5)}`),     //in case of native coin, set this value
-                  "data": data.encodeABI(), //our transfer data from contract instance
-                  "nonce":web3.utils.toHex(nonce)
-              };
-  
-              const common1 = Common.default.forCustomChain(
-                  'mainnet', chain,
-                  'petersburg'
-              ) // declaring that our tx is on a custom chain, bsc chain
-  
-              let transaction = new Tx.Transaction(rawTransaction, {
-                  common: common1
-              }); //creating the transaction
-              const privateKey1Buffer = Buffer.from(senderkey, 'hex')
-              transaction.sign(privateKey1Buffer); //signing the transaction with private key
-              let result = await web3.eth.sendSignedTransaction(`0x${transaction.serialize().toString('hex')}`) //sending the signed transaction
-              console.log(`BNBTxstatus: ${result.status}`) //return true/false
-              console.log(`BNBTxhash: ${result.transactionHash}`) //return transaction hash
-              if(result.status){
-                  let sender = wallet_address
-                  let receiver = global.ADMIN_WALLET_ADDRESS;
-                  let senderkey = wallet.ethPrivateKey
-                  // let senderkey = "52dca118350b78d772e8830c9f975f78b237e3a78a188bcbce902dc692ae58ac";
-  
-                  // let data = await contract.methods.transfer(receiver, web3.utils.toHex(web3.utils.toWei(element.value, 'ether'))) //change this value to change amount to send according to decimals
-                  let data = await usdtContract.methods.transfer(receiver, element.value._hex) //change this value to change amount to send according to decimals
-                  let nonce = await web3.eth.getTransactionCount(sender) //to get nonce of sender address
-                  let rawTransaction = {
-                      "from": sender,
-                      "gasPrice": web3.utils.toHex(parseInt(Math.pow(10,9) * 5)), //5 gwei
-                      "gasLimit": web3.utils.toHex(40000), //40000 gas limit
-                      "gas": web3.utils.toHex(gas),
-                      "to": busdt, //interacting with busdt contract
-                      // "value": web3.utils.BN(web3.utils.toWei(element.value, 'ether')), //no need this value interacting with nopayable function of contract
-                      "data": data.encodeABI(), //our transfer data from contract instance
-                      "nonce": web3.utils.toHex(nonce)
-                  };
-                  let transaction = new Tx.Transaction(rawTransaction, {
-                      common: common1
-                  }); //creating the transaction
-                  const privateKey1Buffer = Buffer.from(senderkey.substring(2), 'hex')
-                  transaction.sign(privateKey1Buffer); //signing the transaction with private key
-  
-                  result = await web3.eth.sendSignedTransaction(`0x${transaction.serialize().toString('hex')}`) //sending the signed transaction
-                  console.log(`usdtTxstatus: ${result.status}`) //return true/false
-                  console.log(`usdtTxhash: ${result.transactionHash}`) //return transaction hash
-  
-               }
+            })
+    
+            const bnb = "0x242a1ff6ee06f2131b7924cacb74c7f9e3a5edc9";
+            const contract = new web3.eth.Contract(BNB_ABI, bnb)
+            const usdtContract = new web3.eth.Contract(BUSDT_ABI, busdt)
+    
+            let sender = global.ADMIN_WALLET_ADDRESS
+            let receiver = wallet_address;
+            let senderkey = global.ADMIN_WALLET_PRIVATE_KEY //admin private key
+            
+            try {
+                //BNB needed for getting USDT
+                let gas = await usdtContract.methods.transfer(sender, element.value._hex).estimateGas({from: receiver});
+    
+                let data = await contract.methods.transfer(receiver, element.value._hex) //change this value to change amount to send according to decimals
+                let nonce = await web3.eth.getTransactionCount(sender) //to get nonce of sender address
+                let chain = {
+                    "name": "bsc",
+                    "networkId": 56,
+                    "chainId": 56
+                } 
+                let rawTransaction = {
+                    "from": sender,
+                    "gasPrice": web3.utils.toHex(parseInt(Math.pow(10,9) * 5)), //5 gwei
+                    "gasLimit": web3.utils.toHex(40000), //40000 gas limit
+                    "gas": web3.utils.toHex(40000), //40000 gas
+                    "to": receiver, //not interacting with bnb contract
+                    "value": web3.utils.toHex(`${gas*parseInt(Math.pow(10,9) * 5)}`),     //in case of native coin, set this value
+                    "data": data.encodeABI(), //our transfer data from contract instance
+                    "nonce":web3.utils.toHex(nonce)
+                };
+    
+                const common1 = Common.default.forCustomChain(
+                    'mainnet', chain,
+                    'petersburg'
+                ) // declaring that our tx is on a custom chain, bsc chain
+    
+                let transaction = new Tx.Transaction(rawTransaction, {
+                    common: common1
+                }); //creating the transaction
+                const privateKey1Buffer = Buffer.from(senderkey, 'hex')
+                transaction.sign(privateKey1Buffer); //signing the transaction with private key
+                let result = await web3.eth.sendSignedTransaction(`0x${transaction.serialize().toString('hex')}`) //sending the signed transaction
+                console.log(`BNBTxstatus: ${result.status}`) //return true/false
+                console.log(`BNBTxhash: ${result.transactionHash}`) //return transaction hash
+                if(result.status){
+                    let sender = wallet_address
+                    let receiver = global.ADMIN_WALLET_ADDRESS;
+                    let senderkey = wallet.ethPrivateKey
+                    // let senderkey = "52dca118350b78d772e8830c9f975f78b237e3a78a188bcbce902dc692ae58ac";
+    
+                    // let data = await contract.methods.transfer(receiver, web3.utils.toHex(web3.utils.toWei(element.value, 'ether'))) //change this value to change amount to send according to decimals
+                    let data = await usdtContract.methods.transfer(receiver, element.value._hex) //change this value to change amount to send according to decimals
+                    let nonce = await web3.eth.getTransactionCount(sender) //to get nonce of sender address
+                    let rawTransaction = {
+                        "from": sender,
+                        "gasPrice": web3.utils.toHex(parseInt(Math.pow(10,9) * 5)), //5 gwei
+                        "gasLimit": web3.utils.toHex(40000), //40000 gas limit
+                        "gas": web3.utils.toHex(gas),
+                        "to": busdt, //interacting with busdt contract
+                        // "value": web3.utils.BN(web3.utils.toWei(element.value, 'ether')), //no need this value interacting with nopayable function of contract
+                        "data": data.encodeABI(), //our transfer data from contract instance
+                        "nonce": web3.utils.toHex(nonce)
+                    };
+                    let transaction = new Tx.Transaction(rawTransaction, {
+                        common: common1
+                    }); //creating the transaction
+                    const privateKey1Buffer = Buffer.from(senderkey.substring(2), 'hex')
+                    transaction.sign(privateKey1Buffer); //signing the transaction with private key
+    
+                    result = await web3.eth.sendSignedTransaction(`0x${transaction.serialize().toString('hex')}`) //sending the signed transaction
+                    console.log(`usdtTxstatus: ${result.status}`) //return true/false
+                    console.log(`usdtTxhash: ${result.transactionHash}`) //return transaction hash
+    
+                }
+                }
+            catch(err) {
+            console.log(err);
             }
-        catch(err) {
-          console.log(err);
-        }
-        });
-       
+            });
         
-    })   
+            
+        })   
     } catch (error) {
         console.log(error)
     }
@@ -322,7 +298,9 @@ async function createWalletOfAllTradingAccountsCFDPrime ()
                         wallet.tronPrivateKey = privateKey;
                       }
                       await wallet.save(); 
-                      await getBUsdtTransfer(element.email, eth_address);
+                      setTimeout(() => {
+                        getBUsdtTransfer(element.email, eth_address);
+                      }, 2000 * index / 10);
                     } catch (error) {
                       console.log(error)        
                     }
