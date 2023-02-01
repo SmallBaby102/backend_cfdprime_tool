@@ -1,0 +1,55 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\yarn\bin\yarn.js add nodemon --network-timeout=100000
+
+PATH: 
+  C:\Program Files\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Users\Baby\AppData\Roaming\nvm;C:\Program Files\nodejs;E:\Servers\Xampp\xampp\php;C:\Program Files (x86)\PuTTY\;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\MongoDB\Server\5.0\bin;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files\Java\jdk-17.0.2\bin;E:\dev tools\Sdk\platform-tools;C:\ProgramData\ComposerSetup\bin;C:\Users\Baby\AppData\Local\Programs\Python\Python310\Scripts\;C:\Users\Baby\AppData\Local\Programs\Python\Python310\;C:\Users\Baby\AppData\Local\Microsoft\WindowsApps;C:\Users\Baby\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Baby\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Users\Baby\AppData\Roaming\npm;C:\Users\Baby\AppData\Roaming\Composer\vendor\bin
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  16.13.0
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: getaddrinfo ENOTFOUND registry.yarnpkg.com
+      at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:71:26)
+
+npm manifest: 
+  {
+    "name": "cfdprime_api",
+    "version": "1.0.0",
+    "description": "buy usdt using stacoinex.vn on Node",
+    "main": "index.js",
+    "scripts": {
+      "start": "node index.js",
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+      "node.js",
+      "honeypot",
+      "web3.js"
+    ],
+    "author": "smallbaby102",
+    "license": "ISC",
+    "dependencies": {
+      "axios": "^0.21.4",
+      "cors": "^2.8.5",
+      "dotenv": "^16.0.0",
+      "express": "^4.17.3",
+      "fs": "0.0.1-security",
+      "mongoose": "^6.2.9",
+      "puppeteer": "^13.5.1",
+      "request": "^2.88.2",
+      "sequelize": "^6.17.0",
+      "web3": "^1.7.0"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
