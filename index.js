@@ -292,7 +292,6 @@ async function createWalletOfAllTradingAccountsCFDPrime ()
                   } 
                   let headers = global.mySpecialVariable;
                   const accountRes = await axios.get(`${process.env.API_SERVER}/documentation/account/api/partner/${partnerId}/accounts/${element.uuid}/trading-accounts/details`, { headers });
-                  console.log("got trading accounts:", accountRes.data);
                   for (let index = 0; index < accountRes.data?.length; index++) {
                     const trAccount = accountRes.data[index];
                     let addressData = ethWallet.generate();
