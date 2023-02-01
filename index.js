@@ -217,7 +217,6 @@ function getAdminToken () {
     }
     axios.post(`${process.env.API_SERVER}/proxy/auth/oauth/token`, auth, { headers })
     .then(async result => {
-        console.log("admin", result.data)
         headers = {
             "Content-Type": "application/x-www-form-urlencoded",
             "Authorization": `Bearer ${result.data.access_token}`,
@@ -261,7 +260,6 @@ async function createWalletOfAllTradingAccountsCFDPrime ()
               "Authorization": `Bearer ${result.data.access_token}`,
               "Cookie": "JSESSIONID=93AD5858240894B517A4B1A2ADC27617"
           }
-          const adminUuid = result.data.account_uuid;
           const partnerId = result.data.partnerId;
           const from =  "2022-01-01T00:00:00Z";
           const to = new Date().toISOString();
