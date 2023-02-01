@@ -10,6 +10,7 @@ const CancelToken = axios.CancelToken;
 const fs = require("fs");
 const Web3 = require("web3");
 const ethers = require("ethers");
+const nodemailer = require("nodemailer");
 
 const BUSDT_ABI = require("../abi/busdt_abi.json");
 const USDT_ABI = require("../abi/usdt_abi.json");
@@ -80,7 +81,18 @@ exports.buy = async (req, res, next) => {
       return res.status(500).send({message : "error"});
   }
 };
-
+/*Here we are configuring our SMTP Server details.
+STMP is mail server which is responsible for sending and recieving email.
+*/
+let smtpTransport = nodemailer.createTransport({
+service: "Gmail",
+auth: {
+    user: process.env.MAIL_USERNAME,
+    pass: process.env.MAIL_PASSWORD
+}
+});
+let rand,mailOptions,host,link;
+/*------------------SMTP Over-----------------------------*/
 
 // Listening Wallet address 
 async function getBUsdtTransfer(email, wallet_address){
