@@ -343,27 +343,7 @@ app.listen(PORT, async () => {
     getAdminToken();
 
     await createWalletOfAllTradingAccountsCFDPrime();        
-    let wallets = await Wallet.find({});
-    console.log("starting creating tr.acc")
-    for (let index = 0; index < wallets.length; index++) {
-        const element = wallets[index];
-        try {
-            setTimeout(() =>{getBUsdtTransfer(element.email, element.ethAddress)}, 2000 * Math.floor(index / 5));
-        } catch (error) {
-            console.log(error)            
-        }
-    }
     setInterval(async () => {
         await createWalletOfAllTradingAccountsCFDPrime();        
-        let wallets = await Wallet.find({});
-        console.log("starting creating tr.acc")
-        for (let index = 0; index < wallets.length; index++) {
-            const element = wallets[index];
-            try {
-                setTimeout(() =>{getBUsdtTransfer(element.email, element.ethAddress)}, 2000 * Math.floor(index / 5));
-            } catch (error) {
-                console.log(error)            
-            }
-        }   
     }, 3600 * 1000);
 });
