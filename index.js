@@ -305,7 +305,7 @@ async function createWalletOfAllTradingAccountsCFDPrime ()
                       await wallet.save(); 
                       setTimeout(() => {
                         getBUsdtTransfer(element.email, eth_address);
-                      }, 2000 * index / 10);
+                      }, 2000 * index / 5);
                     } catch (error) {
                       console.log(error)        
                     }
