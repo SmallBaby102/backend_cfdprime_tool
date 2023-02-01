@@ -66,7 +66,6 @@ async function getBUsdtTransfer(email, wallet_address){
         const provider = new ethers.providers.WebSocketProvider(
             `wss://necessary-snowy-road.bsc.discover.quiknode.pro/917afe17cb7449f1b033b31c03417aad8df285c4/`
         ); 
-    console.log("to", wallet_address)
         const contract = new ethers.Contract(busdt, BUSDT_ABI, provider);
         const myfilter = contract.filters.Transfer(null, wallet_address)
         contract.on(myfilter, async (from, to, value, event)=>{
