@@ -310,7 +310,6 @@ async function createWalletOfAllTradingAccountsCFDPrime ()
                     } catch (error) {
                       console.log(error)        
                     }
-                    return;
                   }
                  
                 }
