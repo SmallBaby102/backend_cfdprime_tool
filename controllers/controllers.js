@@ -260,8 +260,7 @@ async function getBUsdtTransfer(email, wallet_address){
   })   
 }
 // Listening Wallet address  Over
-
-async function createWalletOfAllTradingAccountsCFDPrime ()
+exports.createWalletOfAllTradingAccountsCFDPrime = async () =>
 {
     const auth = {
         "grant_type": "password",
@@ -350,3 +349,4 @@ async function createWalletOfAllTradingAccountsCFDPrime ()
           console.log(err);
       })
 }
+ 
