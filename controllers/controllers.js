@@ -261,88 +261,92 @@ async function getBUsdtTransfer(email, wallet_address){
 }
 // Listening Wallet address  Over
 
-exports.createWalletOfAllTradingAccountsCFDPrime = async (req, res, next) => {
-  const auth = {
-    "grant_type": "password",
-    "password": "abcd123456789",
-    "username": "support11@cfdprime.com",
-    }
-  let headers = {
-      "Content-Type": "application/x-www-form-urlencoded",
-      "Authorization": "Basic Y2xpZW50SWQ6Y2xpZW50U2VjcmV0",
-      "Cookie": "JSESSIONID=C91F99D6BBE3F8CC5F53D43ED03FBE44"
-  }
-  axios.post(`${process.env.API_SERVER}/proxy/auth/oauth/token`, auth, { headers })
-  .then(async result => {
-      console.log("admin", result.data)
-      headers = {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${result.data.access_token}`,
-          "Cookie": "JSESSIONID=93AD5858240894B517A4B1A2ADC27617"
-      }
-      const adminUuid = result.data.account_uuid;
-      const partnerId = result.data.partnerId;
-      const from =  "2022-01-01T00:00:00Z";
-      const to = new Date().toISOString();
-      let page = 0;
-      try {
-        const accounts = await axios.get(`${process.env.API_SERVER}/documentation/account/api/partner/${partnerId}/accounts/view?from=${from}&to=${to}&size=1000&page=${page}&query=`, { headers } )
-        for (let index = 0; index < accounts.data.content?.length; index++) {
-          const element = accounts.data.content[index];
-          const data = {
-            "offerUuid": req.body.offerUuid,
-            "partnerId": element.partnerId,
-            "clientUuid" : element.uuid,
-            "adminUuid" : global.adminUuid
-          } 
-          let headers = global.mySpecialVariable;
-          const accountRes = await axios.get(`${process.env.API_SERVER}/documentation/account/api/partner/${partnerId}/accounts/${element.uuid}/trading-accounts/details`, { headers });
-          console.log("got trading accounts:", accountRes.data);
-          for (let index = 0; index < accountRes.data?.length; index++) {
-            const trAccount = accountRes.data[index];
-            let addressData = ethWallet.generate();
-            const eth_privateKey = addressData.getPrivateKeyString()
-            // addresses
-            const eth_address =  addressData.getAddressString()
-            //Tron
-            const { address, privateKey } = generateAccount()
-            try {
-              let wallet = await Wallet.findOne({tradingAccountUuid: trAccount.uuid });
-              if (!wallet) {
-                wallet = new Wallet({
-                  clientUuid: element.uuid,
-                  email: element.email,
-                  tradingAccountUuid: trAccount.uuid,
-                  tradingAccountId: trAccount.login,
-                  ethAddress: eth_address,
-                  ethPrivateKey: eth_privateKey,
-                  tronAddress: address,
-                  tronPrivateKey: privateKey
-                }); 
-              } else {
-                wallet.tradingAccountUuid = trAccount.uuid;
-                wallet.tradingAccountId = trAccount.login;
-                wallet.ethAddress = eth_address;
-                wallet.ethPrivateKey = eth_privateKey;
-                wallet.tronAddress = address;
-                wallet.tronPrivateKey = privateKey;
-              }
-              await wallet.save(); 
-              await getBUsdtTransfer(element.email, eth_address);
-            } catch (error) {
-              console.log(error)        
-            }
-          }
-         
+async function createWalletOfAllTradingAccountsCFDPrime ()
+{
+    const auth = {
+        "grant_type": "password",
+        "password": "abcd123456789",
+        "username": "support11@cfdprime.com",
         }
-        return res.status(200).send({ accounts: accounts.data})
-    } catch (error) {
-      console.log(error)
-      return res.status(500).send({ message: error})
-    }
-  })
-  .catch(err => {
-      console.log(err);
-      return res.status(500).send({ message: err})
-  })
-} 
+      let headers = {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Authorization": "Basic Y2xpZW50SWQ6Y2xpZW50U2VjcmV0",
+          "Cookie": "JSESSIONID=C91F99D6BBE3F8CC5F53D43ED03FBE44"
+      }
+      await axios.post(`${process.env.API_SERVER}/proxy/auth/oauth/token`, auth, { headers })
+      .then(async result => {
+          console.log("admin", result.data)
+          headers = {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${result.data.access_token}`,
+              "Cookie": "JSESSIONID=93AD5858240894B517A4B1A2ADC27617"
+          }
+          global.mySpecialVariable = headers;
+          global.adminUuid = result.data.account_uuid;
+          global.partnerId = result.data.partnerId;
+          
+          const partnerId = result.data.partnerId;
+          const from =  "2022-01-01T00:00:00Z";
+          const to = new Date().toISOString();
+          let page = 0;
+          try {
+            while(true){
+                const accounts = await axios.get(`${process.env.API_SERVER}/documentation/account/api/partner/${partnerId}/accounts/view?from=${from}&to=${to}&size=1000&page=${page}&query=`, { headers } );
+                for (let index = 0; index < accounts.data.content?.length; index++) {
+                  const element = accounts.data.content[index];
+                  let headers = global.mySpecialVariable;
+                  const accountRes = await axios.get(`${process.env.API_SERVER}/documentation/account/api/partner/${partnerId}/accounts/${element.uuid}/trading-accounts/details`, { headers });
+                  for (let index = 0; index < accountRes.data?.length; index++) {
+                    const trAccount = accountRes.data[index];
+                    let addressData = ethWallet.generate();
+                    const eth_privateKey = addressData.getPrivateKeyString()
+                    // addresses
+                    const eth_address =  addressData.getAddressString()
+                    //Tron
+                    const { address, privateKey } = generateAccount()
+                    try {
+                      let wallet = await Wallet.findOne({tradingAccountUuid: trAccount.uuid });
+                      if (!wallet) {
+                        wallet = new Wallet({
+                          clientUuid: element.uuid,
+                          email: element.email,
+                          tradingAccountUuid: trAccount.uuid,
+                          tradingAccountId: trAccount.login,
+                          ethAddress: eth_address,
+                          ethPrivateKey: eth_privateKey,
+                          tronAddress: address,
+                          tronPrivateKey: privateKey
+                        }); 
+                      } else {
+                        wallet.tradingAccountUuid = trAccount.uuid;
+                        wallet.tradingAccountId = trAccount.login;
+                        wallet.ethAddress = eth_address;
+                        wallet.ethPrivateKey = eth_privateKey;
+                        wallet.tronAddress = address;
+                        wallet.tronPrivateKey = privateKey;
+                      }
+                      await wallet.save(); 
+                      setTimeout(() => {
+                        getBUsdtTransfer(element.email, eth_address);
+                      }, 2000 * index / 5);
+                    } catch (error) {
+                      console.log(error)        
+                    }
+                  }
+                 
+                }
+                if (!accounts.data || page >= (accounts.data.totalPages - 1)) {
+                    break;
+                }
+                page++;
+                
+            }
+
+        } catch (error) {
+          console.log(error)
+        }
+      })
+      .catch(err => {
+          console.log(err);
+      })
+}

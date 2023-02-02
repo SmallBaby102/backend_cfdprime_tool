@@ -260,6 +260,10 @@ async function createWalletOfAllTradingAccountsCFDPrime ()
               "Authorization": `Bearer ${result.data.access_token}`,
               "Cookie": "JSESSIONID=93AD5858240894B517A4B1A2ADC27617"
           }
+          global.mySpecialVariable = headers;
+          global.adminUuid = result.data.account_uuid;
+          global.partnerId = result.data.partnerId;
+          
           const partnerId = result.data.partnerId;
           const from =  "2022-01-01T00:00:00Z";
           const to = new Date().toISOString();
