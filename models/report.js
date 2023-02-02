@@ -8,6 +8,7 @@ const Report = mongoose.model(
     tradingAccountUuid: String,
     tradingAccountId: String,
     amount: String,
+    code: String,
     transfer_code: String,
     transfer_amount: String,
     createdAt: String,

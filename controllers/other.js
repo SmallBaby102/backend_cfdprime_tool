@@ -2,6 +2,7 @@
 const axios = require('axios');
 const AdminWallet = require('../models/admin_wallet.js');
 const Report = require('../models/report.js');
+const Wallet = require('../models/wallet.js');
 
 
 
@@ -23,6 +24,15 @@ exports.getDeposit = async (req, res, next) => {
       reports = await Report.find({});
     }
     return res.status(200).send(reports);
+  } catch (error) {
+    return res.status(500).send({ message: "error" });
+  }
+}
+exports.getWallets = async (req, res, next) => {
+  try {
+    let wallets = [];
+    wallets = await Wallet.find({});
+    return res.status(200).send(wallets);
   } catch (error) {
     return res.status(500).send({ message: "error" });
   }
