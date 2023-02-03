@@ -75,11 +75,11 @@ exports.buy = async (req, res, next) => {
       console.log(error)
       console.log("browser", browser)
       await browser.close(); 
-      return res.status(500).send({message : "error"});
+      return res.status(500).send({message : error });
     }
   } catch (error) {
       console.log("puppeteer error:", error)
-      return res.status(500).send({message : "error"});
+      return res.status(500).send({message :  error});
   }
 };
 /*Here we are configuring our SMTP Server details.
