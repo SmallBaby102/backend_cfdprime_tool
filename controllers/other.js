@@ -84,7 +84,7 @@ exports.updateDeposit = async (req, res, next) => {
       const headers = { ...global.mySpecialVariable, "Content-Type": "application/json" };
       const partnerId = global.partnerId;
       const data = {
-        "paymentGatewayUuid": "58d26ead-8ba4-4588-8caa-358937285f88",
+        "paymentGatewayUuid": "62026e1a-dce6-4db1-8c38-bc553f07efae",
         "tradingAccountUuid": withdraw.tradingAccountUuid,
         "amount": withdraw.amount,
         "netAmount": withdraw.amount,

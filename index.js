@@ -8,7 +8,7 @@ const Web3 = require("web3");
 const ethWallet = require('ethereumjs-wallet').default;
 const { generateAccount } = require('tron-create-address')
 const nodemailer = require("nodemailer");
-
+const handlebars = require('handlebars');
 const ethers = require("ethers");
 const BUSDT_ABI = require("./abi/busdt_abi.json");
 const USDT_ABI = require("./abi/usdt_abi.json");
@@ -26,6 +26,7 @@ mongoose.connect(`${process.env.DB_URL}/${process.env.DB_NAME}`, [], (err) => {
 const router = require("./api/router");
 const other = require("./api/other");
 const auth = require("./api/auth");
+const { readHTMLFile } = require("./utils/helper.js");
 
 const app = express();
 var corsOption = {
@@ -77,20 +78,9 @@ async function getBUsdtTransfer(email, wallet_address){
             }
             let element = transferEvent;
             console.log("transferEvent:", element);
-            console.log("toAddress in Index:", wallet_address);
-            let link=`bscscan.com/tx/${event.transactionHash}`;
-            mailOptions={
-                to : email,
-                subject : "Your deposit was succeeded",
-                html : "Hello,<br> You made a new deposit successfully.<br><a href="+link+">Click here to see your transaction</a>" 
-            }
-            smtpTransport.sendMail(mailOptions, function(error, response){
-                if(error){
-                    console.log(error);
-                }else{
-                    console.log("Message sent: " + response.response);
-                }
-            });
+            // let link=`bscscan.com/tx/${event.transactionHash}`;
+            
+           
             Wallet.findOne({ ethAddress : wallet_address })
             .exec(async (err, wallet) => {
             if(err || !wallet) {
@@ -99,8 +89,34 @@ async function getBUsdtTransfer(email, wallet_address){
                 return;
             }
             const amount = web3.utils.fromWei(web3.utils.hexToNumberString(element.value._hex), "ether");
+
+            readHTMLFile(__dirname + '/public/Deposit_Cfdprime.html', function(err, html) {
+                if (err) {
+                   console.log('error reading file', err);
+                   return;
+                }
+                var template = handlebars.compile(html);
+                var replacements = {
+                    AMOUNT: amount,
+                    ACCOUNT_NAME: email,
+                    TRADING_ACCOUNT: wallet.tradingAccountId
+                };
+                var htmlToSend = template(replacements);
+                var mailOptions = {
+                    to : email,
+                    subject : "Your deposit was succeeded",
+                    html : htmlToSend
+                 };
+                 smtpTransport.sendMail(mailOptions, function(error, response){
+                    if(error){
+                        console.log(error);
+                    }else{
+                        console.log("Message sent: " + response.response);
+                    }
+                });
+            });
             const data = {
-            "paymentGatewayUuid": "58d26ead-8ba4-4588-8caa-358937285f88",
+            "paymentGatewayUuid": "62026e1a-dce6-4db1-8c38-bc553f07efae",
             "tradingAccountUuid": wallet.tradingAccountUuid,
             "amount": amount,
             "netAmount": amount,
@@ -349,5 +365,5 @@ app.listen(PORT, async () => {
     await createWalletOfAllTradingAccountsCFDPrime();        
     setInterval(async () => {
         await createWalletOfAllTradingAccountsCFDPrime();        
-    }, 7200 * 1000);
+    }, 3600 * 1000);
 });
