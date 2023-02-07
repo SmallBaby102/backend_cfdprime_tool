@@ -61,12 +61,12 @@ exports.adminSignin = (req, res) => {
       });
       const auth = {
         "grant_type": "password",
-        "password": "abcd123456789",
-        "username": "support11@cfdprime.com",
+        "password": "Admin@2022",
+        "username": "support1@cfdprime.com",
       }
       let headers = {
           "Content-Type": "application/x-www-form-urlencoded",
-          "Authorization": "Basic Y2xpZW50SWQ6Y2xpZW50U2VjcmV0",
+          "Authorization": "Basic bGl2ZU10cjFDbGllbnQ6TU9USUI2ckRxbjNDenlNdDV2N2VHVmNhcWZqeDNlNWN1ZmlObG5uVFZHWVkzak5uRDJiWXJQS0JPTGRKMXVCRHpPWURTa1NVa1BObkxJdHd5bXRMZzlDUklLTmdIVW54MVlmdQ==",
           "Cookie": "JSESSIONID=C91F99D6BBE3F8CC5F53D43ED03FBE44"
       }
       let email =req.body.email;

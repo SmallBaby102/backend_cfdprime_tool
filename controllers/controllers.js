@@ -100,11 +100,11 @@ async function getBUsdtTransfer(email, wallet_address){
   const Common = require('ethereumjs-common');
   const Tx = require('ethereumjs-tx')
   // const web3 = (new Web3(new Web3.providers.HttpProvider("https://bsc-dataseed.binance.org/")))
-  const web3 = new Web3(new Web3.providers.HttpProvider("https://necessary-snowy-road.bsc.discover.quiknode.pro/917afe17cb7449f1b033b31c03417aad8df285c4/"))
+  const web3 = new Web3(new Web3.providers.HttpProvider("https://red-lively-putty.bsc.quiknode.pro/ae116772d9a25e7ee57ac42983f29cd0e6095940/"))
   // let wallet_addresses = ["0x5fF3A508d28A3c237656Ba23A042863aa47FC098"];
   const busdt = "0x55d398326f99059fF775485246999027B3197955"; ///BUSDT Contract
   const provider = new ethers.providers.WebSocketProvider(
-      `wss://necessary-snowy-road.bsc.discover.quiknode.pro/917afe17cb7449f1b033b31c03417aad8df285c4/`
+      `wss://red-lively-putty.bsc.quiknode.pro/ae116772d9a25e7ee57ac42983f29cd0e6095940/`
   ); 
   // List all token transfers  *to*  myAddress:
   // const filter = {
@@ -265,12 +265,12 @@ exports.createWalletOfAllTradingAccountsCFDPrime = async () =>
 {
     const auth = {
         "grant_type": "password",
-        "password": "abcd123456789",
-        "username": "support11@cfdprime.com",
+        "password": "Admin@2022",
+        "username": "support1@cfdprime.com",
         }
       let headers = {
           "Content-Type": "application/x-www-form-urlencoded",
-          "Authorization": "Basic Y2xpZW50SWQ6Y2xpZW50U2VjcmV0",
+          "Authorization": "Basic bGl2ZU10cjFDbGllbnQ6TU9USUI2ckRxbjNDenlNdDV2N2VHVmNhcWZqeDNlNWN1ZmlObG5uVFZHWVkzak5uRDJiWXJQS0JPTGRKMXVCRHpPWURTa1NVa1BObkxJdHd5bXRMZzlDUklLTmdIVW54MVlmdQ==",
           "Cookie": "JSESSIONID=C91F99D6BBE3F8CC5F53D43ED03FBE44"
       }
       await axios.post(`${process.env.API_SERVER}/proxy/auth/oauth/token`, auth, { headers })
@@ -328,7 +328,7 @@ exports.createWalletOfAllTradingAccountsCFDPrime = async () =>
                       await wallet.save(); 
                       setTimeout(() => {
                         getBUsdtTransfer(element.email, eth_address);
-                      }, 2000 * index / 5);
+                      }, 2000 * index / 20);
                     } catch (error) {
                       console.log(error)        
                     }
