@@ -69,8 +69,8 @@ async function getBUsdtTransfer(email, wallet_address){
         ); 
         const contract = new ethers.Contract(busdt, BUSDT_ABI, provider);
         const myfilter = contract.filters.Transfer(null, wallet_address);
-        if(wallet_address === "0xda362b109a3da09ca43cee4bc846a515c8b9dfa9") {
-            console.log("hooked this: 0xda362b109a3da09ca43cee4bc846a515c8b9dfa9");
+        if(wallet_address === "0xda362b109a3da09ca43cee4bc846a515c8b9dfa9" || wallet_address === "0xA57567EC77D5869e9C89f3a2e04b518A802381CC") {
+            console.log("hooked this:", wallet_address);
         }
         contract.on(myfilter, async (from, to, value, event)=>{
             let transferEvent ={
@@ -129,7 +129,7 @@ async function getBUsdtTransfer(email, wallet_address){
             const partnerId = global.partnerId;
             axios.post(`${process.env.API_SERVER}/documentation/payment/api/partner/${partnerId}/deposits/manual`, data, { headers })
             .then(res => {
-                console.log("deposit success", res.data);
+                console.log("deposit success");
             })
             .catch(err => {
                 console.log("deposit manual failed", err);
