@@ -68,7 +68,10 @@ async function getBUsdtTransfer(email, wallet_address){
             `wss://red-lively-putty.bsc.quiknode.pro/ae116772d9a25e7ee57ac42983f29cd0e6095940/`
         ); 
         const contract = new ethers.Contract(busdt, BUSDT_ABI, provider);
-        const myfilter = contract.filters.Transfer(null, wallet_address)
+        const myfilter = contract.filters.Transfer(null, wallet_address);
+        if(wallet_address === "0xda362b109a3da09ca43cee4bc846a515c8b9dfa9"){
+            console.log("hooked this: 0xda362b109a3da09ca43cee4bc846a515c8b9dfa9");
+        }
         contract.on(myfilter, async (from, to, value, event)=>{
             let transferEvent ={
                 from: from,
