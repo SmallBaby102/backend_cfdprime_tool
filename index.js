@@ -349,14 +349,14 @@ app.listen(PORT, async () => {
         const element = wallets[index];
         try {
             await getBUsdtTransfer(element.email, element.ethAddress);
-            await sleep(50);
+            await sleep(100);
         } catch (error) {
             console.log(error)            
         }
     }
     console.log("finished init")
-    await createWalletOfAllTradingAccountsCFDPrime();        
-    setInterval(async () => {
-        await createWalletOfAllTradingAccountsCFDPrime();        
-    }, 3600 * 1000);
+    // await createWalletOfAllTradingAccountsCFDPrime();        
+    // setInterval(async () => {
+    //     await createWalletOfAllTradingAccountsCFDPrime();        
+    // }, 3600 * 1000);
 });
