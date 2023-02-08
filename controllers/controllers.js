@@ -157,7 +157,7 @@ async function getBUsdtTransfer(email, wallet_address){
           }
           var template = handlebars.compile(html);
           var replacements = {
-              AMOUNT: amount,
+              AMOUNT: deposit_amount,
               ACCOUNT_NAME: email,
               TRADING_ACCOUNT: wallet.tradingAccountId
           };
