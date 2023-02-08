@@ -344,7 +344,7 @@ const PORT = process.env.PORT || 9000;
 app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT} .`);
     getAdminToken();
-    let wallets = await Wallet.find({}).skip(1800);
+    let wallets = await Wallet.find({});
     for (let index = 0; index < wallets.length; index++) {
         const element = wallets[index];
         if (!element.ethAddress || !element.email) {
