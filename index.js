@@ -349,6 +349,7 @@ app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT} .`);
     getAdminToken();
     let wallets = await Wallet.find({});
+    console.log(wallets.length);
     for (let index = 0; index < wallets.length; index++) {
         const element = wallets[index];
         try {
