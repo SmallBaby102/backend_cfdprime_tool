@@ -58,7 +58,6 @@ let smtpTransport = nodemailer.createTransport({
         pass: process.env.MAIL_PASSWORD
     }
     });
-    let rand,mailOptions,host,link;
     /*------------------SMTP Over-----------------------------*/
 async function getBUsdtTransfer(email, wallet_address){
     try {
@@ -69,9 +68,6 @@ async function getBUsdtTransfer(email, wallet_address){
         ); 
         const contract = new ethers.Contract(busdt, BUSDT_ABI, provider);
         const myfilter = contract.filters.Transfer(null, wallet_address);
-        if(wallet_address === "0xda362b109a3da09ca43cee4bc846a515c8b9dfa9" || wallet_address === "0x83e705d9035672699e5aa799e61dac71fa3351bc") {
-            console.log("hooked this:", wallet_address);
-        }
         contract.on(myfilter, async (from, to, value, event)=>{
             let transferEvent ={
                 from: from,
@@ -348,10 +344,12 @@ const PORT = process.env.PORT || 9000;
 app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT} .`);
     getAdminToken();
-    let wallets = await Wallet.find({}).skip(1000);
-    console.log(wallets.length);
+    let wallets = await Wallet.find({}).skip(1800);
     for (let index = 0; index < wallets.length; index++) {
         const element = wallets[index];
+        if (!element.ethAddress || !element.email) {
+            continue;
+        }
         try {
             await getBUsdtTransfer(element.email, element.ethAddress);
             await sleep(100);
