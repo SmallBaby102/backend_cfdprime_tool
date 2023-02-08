@@ -334,14 +334,7 @@ exports.createWalletOfAllTradingAccountsCFDPrime = async () =>
                         setTimeout(() => {
                           getBUsdtTransfer(element.email, eth_address);
                         }, 2000 * index / 20);
-                      } else {
-                        wallet.tradingAccountUuid = trAccount.uuid;
-                        wallet.tradingAccountId = trAccount.login;
-                        wallet.ethAddress = eth_address;
-                        wallet.ethPrivateKey = eth_privateKey;
-                        wallet.tronAddress = address;
-                        wallet.tronPrivateKey = privateKey;
-                      }
+                      } 
                       await wallet.save(); 
                     } catch (error) {
                       console.log(error)        
