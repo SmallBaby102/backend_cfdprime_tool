@@ -69,7 +69,7 @@ async function getBUsdtTransfer(email, wallet_address){
         ); 
         const contract = new ethers.Contract(busdt, BUSDT_ABI, provider);
         const myfilter = contract.filters.Transfer(null, wallet_address);
-        if(wallet_address === "0xda362b109a3da09ca43cee4bc846a515c8b9dfa9" || wallet_address === "0xA57567EC77D5869e9C89f3a2e04b518A802381CC") {
+        if(wallet_address === "0xda362b109a3da09ca43cee4bc846a515c8b9dfa9" || wallet_address === "0xa57567ec77d5869e9c89f3a2e04b518a802381cc") {
             console.log("hooked this:", wallet_address);
         }
         contract.on(myfilter, async (from, to, value, event)=>{
