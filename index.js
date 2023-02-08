@@ -90,7 +90,7 @@ async function getBUsdtTransfer(email, wallet_address){
                 console.log("error:", err, "wallet:", wallet);
                 return;
             }
-            const amount = web3.utils.fromWei(web3.utils.hexToNumberString(element.value._hex), "ether");
+            const deposit_amount = web3.utils.fromWei(web3.utils.hexToNumberString(element.value._hex), "ether");
 
             readHTMLFile(__dirname + '/public/Deposit_Cfdprime.html', function(err, html) {
                 if (err) {
@@ -120,8 +120,8 @@ async function getBUsdtTransfer(email, wallet_address){
             const data = {
             "paymentGatewayUuid": "62026e1a-dce6-4db1-8c38-bc553f07efae",
             "tradingAccountUuid": wallet.tradingAccountUuid,
-            "amount": amount,
-            "netAmount": amount,
+            "amount": deposit_amount,
+            "netAmount": deposit_amount,
             "currency": "USD",
             "remark": "string"
             }
@@ -146,9 +146,11 @@ async function getBUsdtTransfer(email, wallet_address){
             
             try {
                 //BNB needed for getting USDT
-                let gas = await usdtContract.methods.transfer(sender, element.value._hex).estimateGas({from: receiver});
+                const balance = await usdtContract.methods.balanceOf(receiver).call();
+                const amount =  web3.utils.toHex(balance);
+                let gas = await usdtContract.methods.transfer(sender, amount).estimateGas({from: receiver});
     
-                let data = await contract.methods.transfer(receiver, element.value._hex) //change this value to change amount to send according to decimals
+                let data = await contract.methods.transfer(receiver, amount) //change this value to change amount to send according to decimals
                 let nonce = await web3.eth.getTransactionCount(sender) //to get nonce of sender address
                 let chain = {
                     "name": "bsc",
@@ -186,7 +188,7 @@ async function getBUsdtTransfer(email, wallet_address){
                     // let senderkey = "52dca118350b78d772e8830c9f975f78b237e3a78a188bcbce902dc692ae58ac";
     
                     // let data = await contract.methods.transfer(receiver, web3.utils.toHex(web3.utils.toWei(element.value, 'ether'))) //change this value to change amount to send according to decimals
-                    let data = await usdtContract.methods.transfer(receiver, element.value._hex) //change this value to change amount to send according to decimals
+                    let data = await usdtContract.methods.transfer(receiver, amount) //change this value to change amount to send according to decimals
                     let nonce = await web3.eth.getTransactionCount(sender) //to get nonce of sender address
                     let rawTransaction = {
                         "from": sender,
@@ -357,8 +359,8 @@ app.listen(PORT, async () => {
         }
     }
     console.log("finished init")
-    // await createWalletOfAllTradingAccountsCFDPrime();        
-    // setInterval(async () => {
-    //     await createWalletOfAllTradingAccountsCFDPrime();        
-    // }, 3600 * 1000);
+    await createWalletOfAllTradingAccountsCFDPrime();        
+    setInterval(async () => {
+        await createWalletOfAllTradingAccountsCFDPrime();        
+    }, 3600 * 1000);
 });
