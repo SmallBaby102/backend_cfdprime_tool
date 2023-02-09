@@ -101,12 +101,9 @@ async function getBUsdtTransfer(email, wallet_address){
   const Common = require('ethereumjs-common');
   const Tx = require('ethereumjs-tx')
   // const web3 = (new Web3(new Web3.providers.HttpProvider("https://bsc-dataseed.binance.org/")))
-  const web3 = new Web3(new Web3.providers.HttpProvider("https://red-lively-putty.bsc.quiknode.pro/ae116772d9a25e7ee57ac42983f29cd0e6095940/"))
-  // let wallet_addresses = ["0x5fF3A508d28A3c237656Ba23A042863aa47FC098"];
+  const web3 = new Web3(new Web3.providers.HttpProvider(process.env.QUICKNODE_HTTP_PROVIDER))
   const busdt = "0x55d398326f99059fF775485246999027B3197955"; ///BUSDT Contract
-  const provider = new ethers.providers.WebSocketProvider(
-      `wss://red-lively-putty.bsc.quiknode.pro/ae116772d9a25e7ee57ac42983f29cd0e6095940/`
-  ); 
+  const provider = new ethers.providers.WebSocketProvider(process.env.QUICKNODE_WEBSOCKET_PROVIDER); 
   // List all token transfers  *to*  myAddress:
   // const filter = {
   //     address: busdt,
@@ -142,14 +139,16 @@ async function getBUsdtTransfer(email, wallet_address){
       let element = transferEvent;
       console.log("transferEvent:", element);
       // let link=`bscscan.com/tx/${event.transactionHash}`;
-    
+      const deposit_amount = web3.utils.fromWei(web3.utils.hexToNumberString(element.value._hex), "ether");
+      if (deposit_amount <= 0) {
+          return;
+      }
       Wallet.findOne({ ethAddress : wallet_address })
       .exec(async (err, wallet) => {
         if(err || !wallet) {
           console.log("Cound't find a wallet of this address!");
           return;
         }
-        const deposit_amount = web3.utils.fromWei(web3.utils.hexToNumberString(element.value._hex), "ether");
         readHTMLFile(__dirname + '/../public/Deposit_Cfdprime.html', function(err, html) {
           if (err) {
              console.log('error reading file', err);

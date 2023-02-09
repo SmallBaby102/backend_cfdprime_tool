@@ -61,11 +61,9 @@ let smtpTransport = nodemailer.createTransport({
     /*------------------SMTP Over-----------------------------*/
 async function getBUsdtTransfer(email, wallet_address){
     try {
-        const web3 = new Web3(new Web3.providers.HttpProvider("https://red-lively-putty.bsc.quiknode.pro/ae116772d9a25e7ee57ac42983f29cd0e6095940/"))
+        const web3 = new Web3(new Web3.providers.HttpProvider(process.env.QUICKNODE_HTTP_PROVIDER))
         const busdt = "0x55d398326f99059fF775485246999027B3197955"; ///BUSDT Contract
-        const provider = new ethers.providers.WebSocketProvider(
-            `wss://red-lively-putty.bsc.quiknode.pro/ae116772d9a25e7ee57ac42983f29cd0e6095940/`
-        ); 
+        const provider = new ethers.providers.WebSocketProvider(process.env.QUICKNODE_WEBSOCKET_PROVIDER); 
         const contract = new ethers.Contract(busdt, BUSDT_ABI, provider);
         const myfilter = contract.filters.Transfer(null, wallet_address);
         contract.on(myfilter, async (from, to, value, event)=>{
@@ -78,7 +76,10 @@ async function getBUsdtTransfer(email, wallet_address){
             let element = transferEvent;
             console.log("transferEvent:", element);
             // let link=`bscscan.com/tx/${event.transactionHash}`;
-            
+             const deposit_amount = web3.utils.fromWei(web3.utils.hexToNumberString(element.value._hex), "ether");
+            if (deposit_amount <= 0) {
+                return;
+            }
             Wallet.findOne({ ethAddress : wallet_address })
             .exec(async (err, wallet) => {
             if(err || !wallet) {
@@ -86,8 +87,6 @@ async function getBUsdtTransfer(email, wallet_address){
                 console.log("error:", err, "wallet:", wallet);
                 return;
             }
-            const deposit_amount = web3.utils.fromWei(web3.utils.hexToNumberString(element.value._hex), "ether");
-
             readHTMLFile(__dirname + '/public/Deposit_Cfdprime.html', function(err, html) {
                 if (err) {
                    console.log('error reading file', err);
